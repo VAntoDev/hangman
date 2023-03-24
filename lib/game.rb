@@ -10,11 +10,19 @@ class Game
   def execution
     start
     loop do
-      check_guess(ask_guess)
+      if check_guess(ask_guess) == true
+        puts "You win!!"
+        break
+      end
+      if @errors == 6
+        puts "You made 6 errors, you lost!"
+        break
+      end
     end
   end
   
   def start
+    @errors = 0
     puts "This is Hangman! Do you want to play(1) or load a saved game(2)?"
     if get_choice == 1
       @secret_word = Word.new
@@ -37,7 +45,7 @@ class Game
   end
 
   def ask_guess
-    puts "Write a letter or a word."
+    puts "\nWrite a letter or a word."
     choice = gets.chomp.upcase
     if @used_words.include?(choice)
       puts "You already used that letter or word! Try again."
@@ -54,12 +62,12 @@ class Game
     puts "Lets see if '#{player_choice}' is present in the word"
     if player_choice.length > 1
       if player_choice == @secret_word.word.upcase
-        return puts "YOU WIN!"
+        return true
       else
-        return puts "The word is incorrect, +1 error"
+        @errors += 1
+        puts "The word is incorrect, +1 error. Current number of errors: #{@errors}"
       end
     else
-      puts "Checks if the letter given is present in the word gives feedback based on it"
       check_letter(player_choice)
     end
   end
@@ -74,11 +82,12 @@ class Game
           letters_guessed += 1
         end
         if letters_guessed == @secret_word.word.chars.length
-          puts "U win!"
+          return true
         end
       end
     else
-      puts "The letter is not present in the secret word! +1 error"
+      @errors += 1
+      puts "The letter is not present in the secret word! Current number of errors: #{@errors}"
     end
   end
 end
