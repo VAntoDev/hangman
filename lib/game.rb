@@ -1,5 +1,7 @@
 require_relative './word.rb'
 require_relative './board.rb'
+require_relative './save.rb'
+require 'open-uri'
 
 class Game
   def initialize
@@ -30,7 +32,15 @@ class Game
       @current_board = Board.new(@secret_word.word)
       @current_board.display
     else
-      # @secret_word = serialized_secret_word
+      new_save = Save.new("CIAO",2)
+      new_save.serialize
+      # new_save.unserialize(new_save.serialize) working
+      file = new_save.unserialize(URI.open("saves/new-file.txt", "r"))
+      puts "Errors: #{file.errors}"
+      puts "Secret word: #{file.secret_word}"
+      puts "Correct_letters: #{file.correct_letters}"
+
+      # @secret_word = serialized_secret_word     unrelated for now
       # @current_board = Board.new(serialized_secret_word)
     end
   end
@@ -104,4 +114,4 @@ end
 # Implement game saves, the player can choose where to save their game and save it in the saves directory
 # at the start of the game the player can load a save 
 # during any point in the game the player can save the game.
-# When the game is saved the instance varaibles @errors, @secret_word.word and 
+# When the game is saved the instance varaibles @errors, @secret_word.word, @correct_letters and @incorrect_letters

@@ -1,0 +1,5 @@
+---
+:secret_word: CIAO
+:errors: 2
+:correct_letters: []
+:incorrect_letters: []
