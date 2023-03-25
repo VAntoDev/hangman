@@ -15,7 +15,7 @@ class Game
         break
       end
       if @errors == 6
-        puts "You made 6 errors, you lost!"
+        puts "You made 6 errors, you lost! The secret word was #{@secret_word.word}"
         break
       end
     end
@@ -26,11 +26,12 @@ class Game
     puts "This is Hangman! Do you want to play(1) or load a saved game(2)?"
     if get_choice == 1
       @secret_word = Word.new
-      puts "Lets start a new game! \nSecret word generated. It is #{@secret_word.word}"
+      puts "Lets start a new game! \nSecret word generated."
       @current_board = Board.new(@secret_word.word)
       @current_board.display
     else
-      puts "Saved games feature yet to be implemented"
+      # @secret_word = serialized_secret_word
+      # @current_board = Board.new(serialized_secret_word)
     end
   end
 
@@ -47,11 +48,14 @@ class Game
   def ask_guess
     puts "\nWrite a letter or a word."
     choice = gets.chomp.upcase
+    choice.gsub!(/[^A-Za-z]/, '')
     if @used_words.include?(choice)
       puts "You already used that letter or word! Try again."
+      @current_board.display
       return ask_guess
-    elsif choice.length < 1 
+    elsif choice.length < 1
       puts "Invalid input! Try again with a word or a letter"
+      @current_board.display
       return ask_guess
     end
     @used_words.push(choice)
@@ -59,15 +63,17 @@ class Game
   end
 
   def check_guess(player_choice)
-    puts "Lets see if '#{player_choice}' is present in the word"
     if player_choice.length > 1
+      puts "Lets see if the word '#{player_choice}' is right:"
       if player_choice == @secret_word.word.upcase
         return true
       else
         @errors += 1
         puts "The word is incorrect, +1 error. Current number of errors: #{@errors}"
+        @current_board.display
       end
     else
+      puts "Lets see if the letter '#{player_choice}' is present in the word"
       check_letter(player_choice)
     end
   end
@@ -88,10 +94,14 @@ class Game
     else
       @errors += 1
       puts "The letter is not present in the secret word! Current number of errors: #{@errors}"
+      @current_board.incorrect_letters.push(letter)
+      @current_board.display_incorrect_letters
+      @current_board.display
     end
   end
 end
 
-# create Board class
-# board in which the letters that the player guessed are displayed and the other letters aren't (example: b r _ _ d)
-# 
+# Implement game saves, the player can choose where to save their game and save it in the saves directory
+# at the start of the game the player can load a save 
+# during any point in the game the player can save the game.
+# When the game is saved the instance varaibles @errors, @secret_word.word and 
