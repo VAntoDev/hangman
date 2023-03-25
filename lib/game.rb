@@ -17,7 +17,7 @@ class Game
         break
       end
       if @errors == 6
-        puts "You made 6 errors, you lost! The secret word was #{@secret_word.word}"
+        puts "You made 6 errors, you lost! The secret word was #{@secret_word}"
         break
       end
     end
@@ -29,19 +29,17 @@ class Game
     if get_choice == 1
       @secret_word = Word.new
       puts "Lets start a new game! \nSecret word generated."
-      @current_board = Board.new(@secret_word.word)
+      @secret_word = @secret_word.word
+      @current_board = Board.new(@secret_word)
       @current_board.display
     else
-      new_save = Save.new("CIAO",2)
-      new_save.serialize
-      # new_save.unserialize(new_save.serialize) working
-      file = new_save.unserialize(URI.open("saves/new-file.txt", "r"))
-      puts "Errors: #{file.errors}"
-      puts "Secret word: #{file.secret_word}"
-      puts "Correct_letters: #{file.correct_letters}"
-
-      # @secret_word = serialized_secret_word     unrelated for now
-      # @current_board = Board.new(serialized_secret_word)
+      # new_save = Save.new("CIAO",2)
+      file = Save.unserialize(URI.open("saves/new-file.txt", "r"))
+      @current_board = Board.new(file.secret_word, file.correct_letters, file.incorrect_letters)
+      @secret_word = file.secret_word
+      @errors = file.errors
+      puts "Game loaded! Lets continue from where we left the last time: \n"
+      @current_board.display
     end
   end
 
@@ -75,7 +73,7 @@ class Game
   def check_guess(player_choice)
     if player_choice.length > 1
       puts "Lets see if the word '#{player_choice}' is right:"
-      if player_choice == @secret_word.word.upcase
+      if player_choice == @secret_word.upcase
         return true
       else
         @errors += 1
@@ -89,15 +87,15 @@ class Game
   end
 
   def check_letter(letter)
-    if @secret_word.word.chars.include?(letter)
+    if @secret_word.chars.include?(letter)
       @current_board.add_correct_letter(letter)
       @current_board.display
       letters_guessed = 0
-      @secret_word.word.chars.each do | correct_letter | 
+      @secret_word.chars.each do | correct_letter | 
         if @current_board.correct_letters.include?(correct_letter)
           letters_guessed += 1
         end
-        if letters_guessed == @secret_word.word.chars.length
+        if letters_guessed == @secret_word.chars.length
           return true
         end
       end

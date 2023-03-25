@@ -13,9 +13,9 @@ class Word
   end
 
   def pick_rand_word
-      dictionary = File.open("google-10000-english-no-swears.txt", "r")
-      word = dictionary.readlines[Random.new.rand(0..9895)]
-      dictionary.close
-      return word.upcase
+    dictionary = File.open("google-10000-english-no-swears.txt", "r")
+    word = dictionary.readlines[Random.new.rand(0..9895)]
+    dictionary.close
+    return word.upcase
   end
 end

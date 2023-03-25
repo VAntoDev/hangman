@@ -7,6 +7,7 @@ class Save
     @errors = errors
     @correct_letters = correct_letters
     @incorrect_letters = incorrect_letters
+    serialize
   end
 
   def create_new_save
@@ -24,7 +25,7 @@ class Save
     File.open("saves/new-file.txt", 'w'){|f| f.write(data)}
   end
 
-  def unserialize(string)
+  def self.unserialize(string)
     data = YAML.load string
     p data
     Save.new(data[:secret_word], data[:errors], data[:correct_letters], data[:incorrect_letters])
