@@ -33,11 +33,13 @@ class Game
       @current_board = Board.new(@secret_word)
       @current_board.display
     else
-      # new_save = Save.new("CIAO",2)
-      file = Save.unserialize(URI.open("saves/new-file.txt", "r"))
+      puts "Choose which of the files you want to load:"
+      file_choice = gets.chomp
+      file = Save.unserialize(URI.open("saves/save-#{file_choice}.txt", "r"))
       @current_board = Board.new(file.secret_word, file.correct_letters, file.incorrect_letters)
       @secret_word = file.secret_word
       @errors = file.errors
+      @used_words = file.used_words
       puts "Game loaded! Lets continue from where we left the last time: \n"
       @current_board.display
     end
@@ -54,8 +56,13 @@ class Game
   end
 
   def ask_guess
-    puts "\nWrite a letter or a word."
+    puts "\nWrite a letter or a word. If you want to save type: '-save'"
     choice = gets.chomp.upcase
+    if choice == "-SAVE"
+      new_save = Save.new(@secret_word, @errors, @current_board.correct_letters, @current_board.incorrect_letters, @used_words)
+      puts "File saved in save-#{Dir.glob('saves/*').length}"
+      return
+    end
     choice.gsub!(/[^A-Za-z]/, '')
     if @used_words.include?(choice)
       puts "You already used that letter or word! Try again."
