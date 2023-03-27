@@ -1,0 +1,8 @@
+---
+:secret_word: NOTIFIED
+:errors: 1
+:correct_letters: []
+:incorrect_letters: []
+:used_words:
+- POLLO
+:file_name: ''

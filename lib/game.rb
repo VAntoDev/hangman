@@ -10,12 +10,22 @@ class Game
   end
 
   def execution
-    start
+    if start == true
+      return
+    end
     loop do
-      if check_guess(ask_guess) == true
+      case check_guess(ask_guess)
+      when true
         puts "You win!!"
         break
+      when 'SAVING'
+        puts "File saved! Thanks for playing, you can load it restarting the program."
+        break
       end
+      #if check_guess(ask_guess) == true
+      #  puts "You win!!"
+      #  break
+      #end
       if @errors == 6
         puts "You made 6 errors, you lost! The secret word was #{@secret_word}"
         break
@@ -33,6 +43,10 @@ class Game
       @current_board = Board.new(@secret_word)
       @current_board.display
     else
+      if Save.display_all_saves == true
+        puts "You don't have any saves yet!"
+        return true
+      end
       puts "Choose which of the files you want to load:"
       file_choice = gets.chomp
       file = Save.unserialize(URI.open("saves/save-#{file_choice}.txt", "r"))
@@ -59,9 +73,12 @@ class Game
     puts "\nWrite a letter or a word. If you want to save type: '-save'"
     choice = gets.chomp.upcase
     if choice == "-SAVE"
-      new_save = Save.new(@secret_word, @errors, @current_board.correct_letters, @current_board.incorrect_letters, @used_words)
-      puts "File saved in save-#{Dir.glob('saves/*').length}"
-      return
+      puts "Choose the file name:"
+      file_name = gets.chomp.upcase
+      new_save = Save.new(@secret_word, @errors, @current_board.correct_letters, @current_board.incorrect_letters, @used_words, file_name)
+      new_save.serialize
+      puts "File saved in slot: #{Dir.glob('saves/*').length}"
+      return 'GAME-SAVING'
     end
     choice.gsub!(/[^A-Za-z]/, '')
     if @used_words.include?(choice)
@@ -78,6 +95,9 @@ class Game
   end
 
   def check_guess(player_choice)
+    if player_choice == "GAME-SAVING"
+      return 'SAVING'
+    end
     if player_choice.length > 1
       puts "Lets see if the word '#{player_choice}' is right:"
       if player_choice == @secret_word.upcase
