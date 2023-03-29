@@ -1,8 +1,9 @@
 ---
-:secret_word: NOTIFIED
-:errors: 1
-:correct_letters: []
+:secret_word: NASCAR
+:errors: 0
+:correct_letters:
+- A
 :incorrect_letters: []
 :used_words:
-- POLLO
-:file_name: ''
+- A
+:file_name: B

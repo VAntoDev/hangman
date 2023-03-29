@@ -19,13 +19,9 @@ class Game
         puts "You win!!"
         break
       when 'SAVING'
-        puts "File saved! Thanks for playing, you can load it restarting the program."
+        puts "Game saved! Thanks for playing, you can load it by restarting the program."
         break
       end
-      #if check_guess(ask_guess) == true
-      #  puts "You win!!"
-      #  break
-      #end
       if @errors == 6
         puts "You made 6 errors, you lost! The secret word was #{@secret_word}"
         break
@@ -47,9 +43,20 @@ class Game
         puts "You don't have any saves yet!"
         return true
       end
-      puts "Choose which of the files you want to load:"
-      file_choice = gets.chomp
-      file = Save.unserialize(URI.open("saves/save-#{file_choice}.txt", "r"))
+      begin
+        puts "Choose which of the saves you want to load by number (example:1)"
+        puts "If you want to delete all the saves type: -delete"
+        file_choice = gets.chomp
+        if file_choice == "-delete"
+          Save.delete_all_saves
+          return true
+        else
+          file = Save.unserialize(URI.open("saves/save-#{file_choice}.txt", "r"))
+        end
+      rescue
+        puts "This save doesn't exist! Retry, remember to not use any spaces."
+        retry
+      end
       @current_board = Board.new(file.secret_word, file.correct_letters, file.incorrect_letters)
       @secret_word = file.secret_word
       @errors = file.errors
@@ -73,11 +80,11 @@ class Game
     puts "\nWrite a letter or a word. If you want to save type: '-save'"
     choice = gets.chomp.upcase
     if choice == "-SAVE"
-      puts "Choose the file name:"
+      puts "Choose the save name:"
       file_name = gets.chomp.upcase
       new_save = Save.new(@secret_word, @errors, @current_board.correct_letters, @current_board.incorrect_letters, @used_words, file_name)
       new_save.serialize
-      puts "File saved in slot: #{Dir.glob('saves/*').length}"
+      puts "Game saved in slot: #{Dir.glob('saves/*').length}"
       return 'GAME-SAVING'
     end
     choice.gsub!(/[^A-Za-z]/, '')
@@ -135,8 +142,3 @@ class Game
     end
   end
 end
-
-# Implement game saves, the player can choose where to save their game and save it in the saves directory
-# at the start of the game the player can load a save 
-# during any point in the game the player can save the game.
-# When the game is saved the instance varaibles @errors, @secret_word.word, @correct_letters and @incorrect_letters

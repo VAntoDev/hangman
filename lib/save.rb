@@ -1,4 +1,5 @@
 require 'yaml'
+require 'fileutils'
 
 class Save
   attr_accessor :secret_word, :errors, :correct_letters, :incorrect_letters, :used_words, :file_name 
@@ -32,7 +33,7 @@ class Save
     if Dir.glob('saves/*').length == 0
       return true
     end
-    all_files = Dir.children("saves")
+    all_files = Dir.children("saves").sort
     puts "----------------"
     all_files.each_with_index do | file, index |
       begin
@@ -46,4 +47,11 @@ class Save
       end
     end
   end
+
+  def self.delete_all_saves
+    FileUtils.rm_f Dir.glob("saves/*")
+    puts "All saves have been deleted! Restart the program to play again."
+  end
 end
+
+# delete all the files in the directory using the File class
