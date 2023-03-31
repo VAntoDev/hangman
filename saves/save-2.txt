@@ -1,0 +1,13 @@
+---
+:secret_word: PRIOR
+:errors: 2
+:correct_letters:
+- R
+:incorrect_letters:
+- A
+- G
+:used_words:
+- A
+- G
+- R
+:file_name: RR

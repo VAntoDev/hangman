@@ -1,9 +1,9 @@
 ---
-:secret_word: NASCAR
-:errors: 0
-:correct_letters:
-- A
-:incorrect_letters: []
+:secret_word: PAYDAY
+:errors: 1
+:correct_letters: []
+:incorrect_letters:
+- G
 :used_words:
-- A
-:file_name: B
+- G
+:file_name: ''

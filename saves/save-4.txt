@@ -1,0 +1,13 @@
+---
+:secret_word: FOLLOWED
+:errors: 2
+:correct_letters:
+- D
+:incorrect_letters:
+- G
+- T
+:used_words:
+- D
+- G
+- T
+:file_name: GF

@@ -1,3 +1,5 @@
-require_relative './game.rb'
+# frozen_string_literal: true
+
+require_relative './game'
 
 Game.new
