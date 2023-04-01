@@ -1,9 +1,0 @@
----
-:secret_word: PAYDAY
-:errors: 1
-:correct_letters: []
-:incorrect_letters:
-- G
-:used_words:
-- G
-:file_name: ''

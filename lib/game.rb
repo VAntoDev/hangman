@@ -36,7 +36,7 @@ class Game
   def start
     @errors = 0
     puts 'This is Hangman! Do you want to play(1) or load a saved game(2)?'
-    if get_choice == 1
+    if select_choice == 1
       generate_secret_word
     else
       return true if check_saves == true
@@ -45,12 +45,11 @@ class Game
     @current_board.display
   end
 
-  def get_choice
+  def select_choice
     loop do
       choice = gets.chomp.to_i
-      if choice == 1 || choice == 2
-        return choice
-      end
+      return choice if [1, 2].include? choice
+
       puts "Invalid input! Retry with '1' or '2'."
     end
   end
@@ -58,37 +57,24 @@ class Game
   def ask_guess
     puts "\nWrite a letter or a word. If you want to save type: '-save'"
     choice = gets.chomp.upcase
-    if choice == "-SAVE"
-      save_current_file
-      return 'GAME-SAVING'
-    end
+    return 'GAME-SAVING' if save_choice(choice) == true
+
     choice.gsub!(/[^A-Za-z]/, '')
-    if @used_words.include?(choice)
-      puts 'You already used that letter or word! Try again.'
-      @current_board.display
-      return ask_guess
-    elsif choice.length < 1
-      puts 'Invalid input! Try again with a word or a letter'
-      @current_board.display
-      return ask_guess
-    end
+    return ask_guess if word_input_check(choice) == true
+
     @used_words.push(choice)
-    return choice
+    choice
   end
 
   def check_guess(player_choice)
-    if player_choice == 'GAME-SAVING'
-      return 'SAVING'
-    end
+    return 'SAVING' if player_choice == 'GAME-SAVING'
+
     if player_choice.length > 1
       puts "Lets see if the word '#{player_choice}' is right:"
-      if player_choice == @secret_word.upcase
-        return true
-      else
-        @errors += 1
-        puts "The word is incorrect, +1 error. Current number of errors: #{@errors}"
-        @current_board.display
-      end
+      return true if player_choice == @secret_word.upcase
+
+      @errors += 1
+      puts "#{@current_board.display}\nThe word is incorrect, +1 error. Current number of errors: #{@errors}"
     else
       puts "Lets see if the letter '#{player_choice}' is present in the word"
       check_letter(player_choice)
@@ -100,13 +86,9 @@ class Game
       @current_board.add_correct_letter(letter)
       @current_board.display
       letters_guessed = 0
-      @secret_word.chars.each do |correct_letter| 
-        if @current_board.correct_letters.include?(correct_letter)
-          letters_guessed += 1
-        end
-        if letters_guessed == @secret_word.chars.length
-          return true
-        end
+      @secret_word.chars.each do |correct_letter|
+        letters_guessed += 1 if @current_board.correct_letters.include?(correct_letter)
+        return true if letters_guessed == @secret_word.chars.length
       end
     else
       @errors += 1
@@ -127,27 +109,27 @@ class Game
   def check_saves
     if Save.display_all_saves == true
       puts "You don't have any saves yet!"
-      return true
+      true
     end
   end
 
   def file_load_choice
     begin
-      puts "Choose which of the saves you want to load by number (example:1)\nIf you want to delete all the saves type: -delete"
-      get_load_choice
-    rescue
+      puts "Choose which of the saves you want to load by number (example:1)\nTo delete all the saves type: -delete"
+      return true if load_choice == true
+    rescue StandardError
       puts "This save doesn't exist! Retry, remember to not use any spaces."
       retry
     end
     load_save
   end
 
-  def get_load_choice
+  def load_choice
     file_choice = gets.chomp
     if file_choice == '-delete'
       return true if Save.delete_all_saves == true
     else
-      @file = Save.unserialize(URI.open("saves/save-#{file_choice}.txt", "r"))
+      @file = Save.unserialize(URI.open("saves/save-#{file_choice}.txt", 'r'))
     end
   end
 
@@ -165,5 +147,24 @@ class Game
     new_save = Save.new(@secret_word, @errors, @current_board.correct_letters, @current_board.incorrect_letters, @used_words, file_name)
     new_save.serialize
     puts "Game saved in slot: #{Dir.glob('saves/*').length}"
+  end
+
+  def word_input_check(choice)
+    if @used_words.include?(choice)
+      puts 'You already used that letter or word! Try again.'
+      @current_board.display
+      true
+    elsif choice.empty?
+      puts 'Invalid input! Try again with a word or a letter'
+      @current_board.display
+      true
+    end
+  end
+
+  def save_choice(choice)
+    if choice == '-SAVE'
+      save_current_file
+      true
+    end
   end
 end
