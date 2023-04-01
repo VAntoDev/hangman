@@ -29,4 +29,9 @@ class Board
   def display_incorrect_letters
     puts "The incorrect letters you tried were: #{@incorrect_letters.join(' ')}"
   end
+
+  def display_full_board
+    self.display_incorrect_letters
+    self.display
+  end
 end

@@ -1,0 +1,15 @@
+---
+:secret_word: OPERATIONAL
+:errors: 2
+:correct_letters:
+- A
+- T
+:incorrect_letters:
+- S
+- F
+:used_words:
+- S
+- A
+- F
+- T
+:file_name: WASD

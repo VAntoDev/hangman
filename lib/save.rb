@@ -36,7 +36,6 @@ class Save
   def self.display_all_saves
     return true if Dir.glob('saves/*').empty?
 
-    puts '----------------'
     fix_nameless_file
   end
 

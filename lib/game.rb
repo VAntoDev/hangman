@@ -4,6 +4,7 @@ require_relative './word'
 require_relative './board'
 require_relative './save'
 require 'open-uri'
+require 'io/console'
 
 # handles the game execution
 class Game
@@ -20,6 +21,7 @@ class Game
     loop do
       case check_guess(ask_guess)
       when true
+        @current_board.display
         puts 'You win!!'
         break
       when 'SAVING'
@@ -30,6 +32,7 @@ class Game
         puts "You made 6 errors, you lost! The secret word was #{@secret_word}"
         break
       end
+      @current_board.display_full_board
     end
   end
 
@@ -57,6 +60,7 @@ class Game
   def ask_guess
     puts "\nWrite a letter or a word. If you want to save type: '-save'"
     choice = gets.chomp.upcase
+    $stdout.clear_screen
     return 'GAME-SAVING' if save_choice(choice) == true
 
     choice.gsub!(/[^A-Za-z]/, '')
@@ -84,18 +88,11 @@ class Game
   def check_letter(letter)
     if @secret_word.chars.include?(letter)
       @current_board.add_correct_letter(letter)
-      @current_board.display
-      letters_guessed = 0
-      @secret_word.chars.each do |correct_letter|
-        letters_guessed += 1 if @current_board.correct_letters.include?(correct_letter)
-        return true if letters_guessed == @secret_word.chars.length
-      end
+      return true if check_win_condition(letter) == true
     else
       @errors += 1
       puts "The letter is not present in the secret word! Current number of errors: #{@errors}"
       @current_board.incorrect_letters.push(letter)
-      @current_board.display_incorrect_letters
-      @current_board.display
     end
   end
 
@@ -107,6 +104,7 @@ class Game
   end
 
   def check_saves
+    $stdout.clear_screen
     if Save.display_all_saves == true
       puts "You don't have any saves yet!"
       true
@@ -152,11 +150,11 @@ class Game
   def word_input_check(choice)
     if @used_words.include?(choice)
       puts 'You already used that letter or word! Try again.'
-      @current_board.display
+      @current_board.display_full_board
       true
     elsif choice.empty?
       puts 'Invalid input! Try again with a word or a letter'
-      @current_board.display
+      @current_board.display_full_board
       true
     end
   end
@@ -165,6 +163,14 @@ class Game
     if choice == '-SAVE'
       save_current_file
       true
+    end
+  end
+
+  def check_win_condition
+    letters_guessed = 0
+    @secret_word.chars.each do |correct_letter|
+      letters_guessed += 1 if @current_board.correct_letters.include?(correct_letter)
+      return true if letters_guessed == @secret_word.chars.length
     end
   end
 end
