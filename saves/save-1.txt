@@ -1,15 +1,9 @@
 ---
-:secret_word: FOLLOWS
-:errors: 3
-:correct_letters:
-- O
+:secret_word: FLOPPY
+:errors: 1
+:correct_letters: []
 :incorrect_letters:
 - A
-- I
-- U
 :used_words:
 - A
-- O
-- I
-- U
-:file_name: LO
+:file_name: ''

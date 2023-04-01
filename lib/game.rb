@@ -98,7 +98,7 @@ class Game
 
   def generate_secret_word
     @secret_word = Word.new
-    puts "Lets start a new game! \nSecret word generated."
+    puts "Lets start a new game! \nSecret word generated. If you do more than 6 mistakes you lose!"
     @secret_word = @secret_word.word
     @current_board = Board.new(@secret_word)
   end
@@ -166,7 +166,7 @@ class Game
     end
   end
 
-  def check_win_condition
+  def check_win_condition(*)
     letters_guessed = 0
     @secret_word.chars.each do |correct_letter|
       letters_guessed += 1 if @current_board.correct_letters.include?(correct_letter)
